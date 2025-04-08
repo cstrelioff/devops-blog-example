@@ -1,0 +1,18 @@
+## Dockerfile.build
+
+# set the base imaage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# copy package.json and package-lock.json to image
+COPY eleventy-base-blog-main/package*.json ./
+
+# install 11ty dependencies
+RUN npm install
+
+# copy files to /app in container
+COPY eleventy-base-blog-main/ .
+
+# run build command for production
+RUN npm run build
