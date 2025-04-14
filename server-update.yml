@@ -1,0 +1,33 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: true
+
+  #
+  # mostly copied from 
+  # https://www.jeffgeerling.com/blog/2022/ansible-playbook-upgrade-ubuntudebian-servers-and-reboot-if-needed
+  #
+  # - some commands out of date
+  #
+  tasks:
+    - name: Run apt update and apt upgrade
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 # one day, in seconds
+
+    - name: Check if reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: false
+      register: reboot_required_file
+
+    - name: Reboot the server (if needed)
+      ansible.builtin.reboot:
+      when: reboot_required_file.stat.exists == true
+
+    - name: Autoremove deps that are no longer needed
+      ansible.builtin.apt:
+        autoremove: true
+
+

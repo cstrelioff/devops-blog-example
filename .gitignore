@@ -1,6 +1,12 @@
 _site/
 .terraform/
+ssh/
 
+*Makefile*
 *.swp
 
+terraform.tfstate
+terraform.tfstate.backup
 .terraform.lock.hcl
+
+my-*.ini
