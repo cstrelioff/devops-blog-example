@@ -14,6 +14,14 @@ resource "digitalocean_domain" "default" {
   ip_address = digitalocean_droplet.www.ipv4_address
 }
 
+# add an A record for www.domain
+resource "digitalocean_record" "www" {
+  domain = digitalocean_domain.default.name
+  type   = "A"
+  name   = "www"
+  value  = digitalocean_droplet.www.ipv4_address
+}
+
 # output server's ip
 output "ip_address" {
   value = digitalocean_droplet.www.ipv4_address
