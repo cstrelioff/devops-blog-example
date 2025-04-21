@@ -1,0 +1,64 @@
+SHELL=/bin/bash
+
+# get digitalocean token
+DO_TOKEN := $(shell secret-tool lookup token digitalocean)
+
+# set domain name
+DOMAIN = bennu.site
+
+# a default announcement
+define ANNOUNCE_BODY
+Makefile for terraform commands.
+
+tf-init
+  - runs "terraform init"
+  - this should be run first!
+
+tf-fmt
+  - runs "teffaform fmt ."
+  - this formats terraform files in current directory
+
+tf-validate
+  - runs "terraform validate ."
+  - validates all files in current directory
+
+tf-plan
+  - runs "terraform plan"
+
+tf-apply
+  - runs "terraform apply"
+  - you will have to type 'yes'
+
+tf-destroy
+  - runs "terraform apply -destroy"
+  - you will have to type 'yes'
+
+tf-refresh
+  -runs "terraform refresh"
+
+endef
+
+export ANNOUNCE_BODY
+all:
+	@echo "$$ANNOUNCE_BODY"
+
+tf-init:
+	@ terraform init
+
+tf-fmt:
+	terraform fmt .
+
+tf-validate:
+	terraform validate .
+
+tf-plan:
+	@ terraform plan -var "do_token=$(DO_TOKEN)" -var "domain=$(DOMAIN)"
+
+tf-apply:
+	@ terraform apply -var "do_token=$(DO_TOKEN)" -var "domain=$(DOMAIN)"
+
+tf-refresh:
+	@ terraform refresh -var "do_token=$(DO_TOKEN)" -var "domain=$(DOMAIN)"
+
+tf-destroy:
+	@ terraform apply -destroy -var "do_token=$(DO_TOKEN)" -var "domain=$(DOMAIN)"
