@@ -2,7 +2,6 @@ _site/
 .terraform/
 ssh/
 
-*Makefile*
 *.swp
 
 terraform.tfstate
