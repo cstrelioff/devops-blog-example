@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -d _site ]; then
+  # if _site exists, delete and reconstruct
+  echo "...removing old version of _site"
+  rm -r _site
+fi
+
 # create 11ty-build image
 docker build -f Dockerfile.build -t 11ty-build .
 
