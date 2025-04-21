@@ -1,3 +1,22 @@
+##
+## provider
+##
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
+
+provider "digitalocean" {
+  token = var.do_token
+}
+
+##
+## server
+##
 resource "digitalocean_droplet" "www" {
   image  = "ubuntu-22-04-x64"
   name   = "www-nginx"
@@ -25,4 +44,26 @@ resource "digitalocean_record" "www" {
 # output server's ip
 output "ip_address" {
   value = digitalocean_droplet.www.ipv4_address
+}
+
+##
+## data
+##
+# ssh key uploaded to digitalocean
+data "digitalocean_ssh_key" "do_test" {
+  name = "do_test"
+}
+
+##
+## variables
+##
+variable "do_token" {
+  type        = string
+  description = "Personal access token setup at digitalocean."
+}
+
+variable "domain" {
+  type        = string
+  description = "The domain name for the server"
+  default     = "example.com"
 }
