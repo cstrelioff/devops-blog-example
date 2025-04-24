@@ -1,0 +1,69 @@
+SHELL=/bin/bash
+
+# set ip
+IP = 104.131.15.134
+
+# a default announcement
+define ANNOUNCE_BODY
+Makefile for ansible and ssh commands.
+
+ssh-root:
+  - ssh to the server with root credentials
+
+ping-root:
+  - pings the server with root credentials
+
+create-ansibleuser-key:
+  - creates ssh key for ansibleuser
+
+fingerprint-ansibleuser:
+  - add server fingerprints for inventory to ~/.ssh/known_hosts
+
+ssh-ansibleuser:
+  - ssh to the server with ansibleuser credentials
+
+ping-ansibleuser:
+  - pings the server with ansibleuser credentials
+
+
+endef
+
+export ANNOUNCE_BODY
+
+all:
+	@echo "$$ANNOUNCE_BODY"
+
+ssh-root:
+	ssh root@${IP}
+
+fingerprint-root:
+	ansible-playbook -i inventory_root.ini playbook.yml --tags "fingerprint"
+
+ping-root:
+	ansible all -i inventory-root.ini -m ping
+
+create-ansibleuser-key:
+	mkdir ssh
+	ssh-keygen -t rsa -b 4096 -f ssh/ansible_user
+
+fingerprint-ansibleuser:
+	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "fingerprint"
+
+ssh-ansibleuser:
+	ssh -o "IdentitiesOnly=yes" -i ssh/ansible_user ansibleuser@${IP}
+
+ping-ansibleuser:
+	ansible all -i inventory-ansible.ini -m ping
+
+server-setup:
+	ansible-playbook -i inventory_root.ini playbook.yml --tags "setup"
+	
+server-update:
+	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "update"
+
+nginx-setup:
+	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "nginx_setup"
+
+web-rsync:
+	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "web_rsync"
+
