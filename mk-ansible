@@ -64,6 +64,9 @@ server-update:
 nginx-setup:
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "nginx_setup"
 
+certbot-certificate:
+	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "certbot"
+
 web-rsync:
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "web_rsync"
 

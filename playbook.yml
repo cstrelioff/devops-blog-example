@@ -5,6 +5,7 @@
     username: ansibleuser
     domain: bennu.site
     local_html: _site
+    email: chris.strelioff@gmail.com
 
   #
   # SERVER FINGERPRINT
@@ -164,6 +165,41 @@
         state: link
       notify: Restart Nginx
       tags: [ never, nginx_setup ]
+
+  #
+  #
+  # CERTBOT SETUP
+  #
+  #
+    - name: Install Certbot
+      community.general.snap:
+        name: certbot
+        classic: true
+      tags: [ never, certbot ]
+ 
+    - name: Prepare certbot command
+      file:
+        src: /snap/bin/certbot
+        dest: /usr/bin/certbot
+        state: link
+      tags: [ never, certbot ]
+
+    - name: Generate certificate
+      ansible.builtin.shell:
+        cmd: "certbot --nginx --email {{ email }} --eff-email --agree-tos -d {{ domain }} -d www.{{ domain}}"
+      notify: Restart Nginx
+      tags: [ never, certbot ]
+
+    - name: Certbot renewal dry-run
+      ansible.builtin.shell:
+        cmd: "certbot renew --dry-run"
+      register: dryrun_output
+      tags: [ never, certbot ]
+
+    - name: Print renewal dry-run output
+      debug:
+        var: dryrun_output.stdout_lines
+      tags: [ never, certbot ]
 
   #
   #
