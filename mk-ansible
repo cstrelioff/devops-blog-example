@@ -3,12 +3,19 @@ SHELL=/bin/bash
 # set ip
 IP = 104.131.15.134
 
+# directory for ansibleuser ssh key
+ssh-dir = ssh
+
 # a default announcement
 define ANNOUNCE_BODY
+
 Makefile for ansible and ssh commands.
 
 ssh-root:
   - ssh to the server with root credentials
+
+fingerprint-root:
+  - add server fingerprints for inventory to ~/.ssh/known_hosts
 
 ping-root:
   - pings the server with root credentials
@@ -25,6 +32,24 @@ ssh-ansibleuser:
 ping-ansibleuser:
   - pings the server with ansibleuser credentials
 
+server-setup:
+  - create ansibleuser user and enable passwordles sudo
+  - disable root login with password
+
+server-update:
+  - update the server using the ansibleuser account
+  - this can be reused to update the server at any time
+
+nginx-setup:
+  - install nginx and ufw
+  - setup nginx config, create dir, enable site
+
+certbot-certificate:
+  - user certbot to create lets encrypt certificate and setup https
+
+web-rsync:
+  - sync the website in _site with server
+  - this can be reused as the site is changed
 
 endef
 
@@ -46,27 +71,32 @@ create-ansibleuser-key:
 	mkdir ssh
 	ssh-keygen -t rsa -b 4096 -f ssh/ansible_user
 
-fingerprint-ansibleuser:
+$(ssh-dir):
+	@echo "Directory 'ssh' does not exist; creating dir and key"
+	mkdir ssh
+	ssh-keygen -t rsa -b 4096 -f ssh/ansible_user
+
+fingerprint-ansibleuser: | $(ssh-dir)
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "fingerprint"
 
-ssh-ansibleuser:
+ssh-ansibleuser: | $(ssh-dir)
 	ssh -o "IdentitiesOnly=yes" -i ssh/ansible_user ansibleuser@${IP}
 
-ping-ansibleuser:
-	ansible all -i inventory-ansible.ini -m ping
+ping-ansibleuser: | $(ssh-dir)
+	ansible all -i inventory_ansibleuser.ini -m ping
 
-server-setup:
+server-setup: | $(ssh-dir)
 	ansible-playbook -i inventory_root.ini playbook.yml --tags "setup"
 	
-server-update:
+server-update: | $(ssh-dir)
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "update"
 
-nginx-setup:
+nginx-setup: | $(ssh-dir)
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "nginx_setup"
 
-certbot-certificate:
+certbot-certificate: | $(ssh-dir)
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "certbot"
 
-web-rsync:
+web-rsync: | $(ssh-dir)
 	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "web_rsync"
 
