@@ -3,9 +3,9 @@
   become: true
   vars:
     username: ansibleuser
-    domain: bennu.site
+    domain: example.com
     local_html: _site
-    email: chris.strelioff@gmail.com
+    email: me@example.com
 
   #
   # SERVER FINGERPRINT
