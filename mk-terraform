@@ -4,7 +4,7 @@ SHELL=/bin/bash
 DO_TOKEN := $(shell secret-tool lookup token digitalocean)
 
 # set domain name
-DOMAIN = bennu.site
+DOMAIN = example.com
 
 # a default announcement
 define ANNOUNCE_BODY

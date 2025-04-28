@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 # set ip
-IP = 104.131.15.134
+IP = xxx.xxx.xx.xxx
 
 # directory for ansibleuser ssh key
 ssh-dir = ssh
