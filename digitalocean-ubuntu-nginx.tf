@@ -22,6 +22,7 @@ resource "digitalocean_droplet" "www" {
   name   = "www-nginx"
   region = "nyc3"
   size   = "s-1vcpu-1gb"
+  ipv6   = true
   ssh_keys = [
     data.digitalocean_ssh_key.do_test.id
   ]

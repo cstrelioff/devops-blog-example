@@ -8,25 +8,6 @@
     email: me@example.com
 
   #
-  # SERVER FINGERPRINT
-  #
-  # reference 
-  # https://toxigon.com/how-to-add-an-ssh-fingerprint-to-your-known-hosts-file-in-linux
-  #
-  tasks:
-    - name: Get the server's fingerprint
-      command: ssh-keyscan {{ inventory_hostname }}
-      register: fingerprint
-      tags: [ never, fingerprint ]
-
-    - name: Add the fingerprint to the known_hosts file
-      lineinfile:
-        path: ~/.ssh/known_hosts
-        line: "{{ fingerprint.stdout }}"
-        create: yes
-      tags: [ never, fingerprint ]
-
-  #
   # SERVER SETUP
   #
   # reference 

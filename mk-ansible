@@ -1,10 +1,10 @@
 SHELL=/bin/bash
 
 # set ip
-IP = xxx.xxx.xx.xxx
+IP := xxx.xxx.xx.xxx
 
 # directory for ansibleuser ssh key
-ssh-dir = ssh
+ssh-dir := ssh
 
 # a default announcement
 define ANNOUNCE_BODY
@@ -14,17 +14,11 @@ Makefile for ansible and ssh commands.
 ssh-root:
   - ssh to the server with root credentials
 
-fingerprint-root:
-  - add server fingerprints for inventory to ~/.ssh/known_hosts
-
 ping-root:
   - pings the server with root credentials
 
 create-ansibleuser-key:
   - creates ssh key for ansibleuser
-
-fingerprint-ansibleuser:
-  - add server fingerprints for inventory to ~/.ssh/known_hosts
 
 ssh-ansibleuser:
   - ssh to the server with ansibleuser credentials
@@ -61,9 +55,6 @@ all:
 ssh-root:
 	ssh root@${IP}
 
-fingerprint-root:
-	ansible-playbook -i inventory_root.ini playbook.yml --tags "fingerprint"
-
 ping-root:
 	ansible all -i inventory-root.ini -m ping
 
@@ -75,9 +66,6 @@ $(ssh-dir):
 	@echo "Directory 'ssh' does not exist; creating dir and key"
 	mkdir ssh
 	ssh-keygen -t rsa -b 4096 -f ssh/ansible_user
-
-fingerprint-ansibleuser: | $(ssh-dir)
-	ansible-playbook -i inventory_ansibleuser.ini playbook.yml --tags "fingerprint"
 
 ssh-ansibleuser: | $(ssh-dir)
 	ssh -o "IdentitiesOnly=yes" -i ssh/ansible_user ansibleuser@${IP}
